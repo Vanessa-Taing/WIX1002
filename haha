@@ -1,0 +1,88 @@
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Main.java to edit this template
+ */
+package Trial;
+import java.io.*;
+import java.util.Scanner;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+/**
+ *
+ * @author VJT
+ */
+public class trial1 {
+
+    /**
+     * @param args the command line arguments
+     */
+    public static void main(String[] args) {
+        int jobCompleteCnt=0,jobCreatedCnt=0,partitionCnt=0,indexComplete,indexCreated,indexPartition,v100s=0,opteron=0,k10=0,titan=0,epyc=0,k40c=0;
+        String[] PartitionArray = new String[6];
+        String CompleteIdList="", CreatedIdList="",PartitionList="";
+        try {            
+            Scanner inputStream = new Scanner (new FileInputStream("C:\\Users\\user\\Documents\\WIX1002\\extracted_log"));  //stream in log file
+            while(inputStream.hasNextLine()){
+                String input = inputStream.nextLine();
+                //System.out.println(input);
+                if (input.contains("job_complete")&&input.contains("done")){    //for job completed
+                    //System.out.println(input);
+                    indexComplete = input.indexOf("=")+1;
+                    //System.out.println(input.substring(index, index+5));
+                    CompleteIdList += input.substring(indexComplete, indexComplete+5)+" ";
+                    jobCompleteCnt +=1;
+                }
+                if (input.contains("Allocate")){    //for job created
+                    //System.out.println(input);
+                    indexCreated = input.indexOf("=")+1;
+                    CreatedIdList += input.substring(indexCreated,indexCreated+5)+" ";
+                    jobCreatedCnt +=1;
+                }
+                if (input.contains("Partition")){
+                    indexPartition = input.indexOf("Partition")+10;
+                    switch(input.substring(indexPartition)){
+                        case "gpu-v100s": 
+                            v100s +=1;
+                            break;
+                        case "cpu-opteron":
+                            opteron +=1;
+                            break;
+                        case "gpu-k10":
+                            k10 +=1;
+                            break;
+                        case "gpu-titan":
+                            titan +=1;
+                            break;
+                        case "cpu-epyc":
+                            epyc+=1;
+                            break;
+                        case "gpu-k40c":
+                            k40c +=1;
+                            break;
+                    }                        
+                    //cpu-opteron gpu-k10 gpu-titan cpu-epyc gpu-k40c
+                    if (PartitionList.contains(input.substring(indexPartition))== false)
+                        PartitionList += input.substring(indexPartition)+" ";
+                }
+            }
+            inputStream.close();
+            System.out.println("Total created jobs: "+ jobCreatedCnt);
+            System.out.println("IDs of created jobs: "+CreatedIdList);
+            System.out.println("Total completed jobs: "+ jobCompleteCnt);
+            System.out.println("IDs of completed jobs: "+CompleteIdList);
+            System.out.println("************************************************************");
+            PartitionArray = PartitionList.split(" ");
+            
+            System.out.printf("%-18s%-14s%-14s%-14s%-14s%-14s%-14s\n","Partition List: ",PartitionArray[0],PartitionArray[1],PartitionArray[2],PartitionArray[3],PartitionArray[4],PartitionArray[5]);
+            System.out.printf("%-18s%-14s%-14s%-14s%-14s%-14s%-14s\n","Number of jobs: ",v100s,opteron,k10,titan,epyc,k40c);
+            
+        } catch (FileNotFoundException ex) {
+            Logger.getLogger(trial1.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        
+        
+        
+    }
+    
+}
